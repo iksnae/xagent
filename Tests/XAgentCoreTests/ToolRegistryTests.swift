@@ -5,11 +5,11 @@ final class ToolRegistryTests: XCTestCase {
 
     // MARK: - Helpers
 
-    func makeEchoTool(name: String = "echo") -> Tool {
-        Tool(
+    func makeEchoTool(name: String = "echo") -> TypedTool<EchoParams, EchoResult> {
+        TypedTool<EchoParams, EchoResult>(
             name: name,
             description: "Echoes the message parameter back to the caller.",
-            parameters: [
+            parameterSchema: [
                 ToolParameter(
                     name: "message",
                     type: "string",
@@ -18,7 +18,7 @@ final class ToolRegistryTests: XCTestCase {
                 )
             ],
             handler: { params in
-                params["message"] ?? "(no message)"
+                EchoResult(echoed: params.message)
             }
         )
     }
@@ -111,7 +111,9 @@ final class ToolRegistryTests: XCTestCase {
 
     func testHandlerIsInvokable() async throws {
         let tool = makeEchoTool(name: "upper")
-        let result = try await tool.handler(["message": "hello"])
-        XCTAssertEqual(result, "hello")
+        let input = try JSONEncoder().encode(EchoParams(message: "hello"))
+        let output = try await tool.handle(input)
+        let result = try JSONDecoder().decode(EchoResult.self, from: output)
+        XCTAssertEqual(result.echoed, "hello")
     }
 }

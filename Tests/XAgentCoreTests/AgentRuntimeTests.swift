@@ -78,11 +78,11 @@ final class AgentRuntimeTests: XCTestCase {
 
     // MARK: - Helpers
 
-    func makeEchoTool() -> Tool {
-        Tool(
+    func makeEchoTool() -> TypedTool<EchoParams, EchoResult> {
+        TypedTool<EchoParams, EchoResult>(
             name: "echo",
             description: "Echoes the message parameter back to the caller.",
-            parameters: [
+            parameterSchema: [
                 ToolParameter(
                     name: "message",
                     type: "string",
@@ -91,7 +91,7 @@ final class AgentRuntimeTests: XCTestCase {
                 )
             ],
             handler: { params in
-                params["message"] ?? "(no message)"
+                EchoResult(echoed: params.message)
             }
         )
     }
@@ -189,10 +189,10 @@ final class AgentRuntimeTests: XCTestCase {
         let registry = ToolRegistry()
 
         // Register a tool whose handler always throws.
-        let failingTool = Tool(
+        let failingTool = TypedTool<EmptyParams, EmptyResult>(
             name: "flaky",
             description: "Always throws an error.",
-            parameters: [],
+            parameterSchema: [],
             handler: { _ in
                 throw NSError(domain: "ToolFlake", code: 42, userInfo: [NSLocalizedDescriptionKey: "flake"])
             }
@@ -476,10 +476,10 @@ final class AgentRuntimeTests: XCTestCase {
         let agent = makeTestAgent()
         let registry = ToolRegistry()
 
-        let failingTool = Tool(
+        let failingTool = TypedTool<EmptyParams, EmptyResult>(
             name: "flaky",
             description: "Always throws an error.",
-            parameters: [],
+            parameterSchema: [],
             handler: { _ in
                 throw NSError(domain: "ToolFlake", code: 99, userInfo: [NSLocalizedDescriptionKey: "stream flake"])
             }

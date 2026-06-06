@@ -1,6 +1,69 @@
 import XCTest
 @testable import XAgentCore
 
+// MARK: - Reusable Codable test payloads
+
+struct EchoParams: ToolParameters {
+    let message: String
+}
+
+struct EchoResult: ToolResult {
+    let echoed: String
+}
+
+struct AddParams: ToolParameters {
+    let a: Int
+    let b: Int
+}
+
+struct AddResult: ToolResult {
+    let sum: Int
+}
+
+struct GreetParams: ToolParameters {
+    let name: String
+    let title: String?
+}
+
+struct GreetResult: ToolResult {
+    let greeting: String
+}
+
+struct LogParams: ToolParameters {
+    let level: String
+}
+
+struct LogResult: ToolResult {
+    let output: String
+}
+
+struct EmptyParams: ToolParameters {}
+
+struct EmptyResult: ToolResult {
+    let pong: String
+}
+
+struct SearchParams: ToolParameters {
+    let query: String
+    let limit: Int?
+    let offset: Int?
+}
+
+struct SearchResult: ToolResult {
+    let results: String
+}
+
+struct NowParams: ToolParameters {}
+struct NowResult: ToolResult {
+    let time: String
+}
+
+struct DateParams: ToolParameters {}
+
+struct DateResult: ToolResult {
+    let iso8601: String
+}
+
 final class ToolTests: XCTestCase {
 
     // MARK: - ToolParameter tests
@@ -43,13 +106,13 @@ final class ToolTests: XCTestCase {
         XCTAssertEqual(param.description, "")
     }
 
-    // MARK: - Tool construction
+    // MARK: - Tool construction (TypedTool)
 
     func testToolConstruction() {
-        let tool = Tool(
+        let tool = TypedTool<GreetParams, GreetResult>(
             name: "greet",
             description: "Returns a greeting.",
-            parameters: [
+            parameterSchema: [
                 ToolParameter(
                     name: "name",
                     type: "string",
@@ -57,132 +120,146 @@ final class ToolTests: XCTestCase {
                     required: true
                 )
             ],
-            handler: { _ in "hello" }
+            handler: { params in
+                GreetResult(greeting: "hello \(params.name)")
+            }
         )
 
         XCTAssertEqual(tool.name, "greet")
         XCTAssertEqual(tool.description, "Returns a greeting.")
-        XCTAssertEqual(tool.parameters.count, 1)
-        XCTAssertEqual(tool.parameters.first?.name, "name")
+        XCTAssertEqual(tool.parameterSchema.count, 1)
+        XCTAssertEqual(tool.parameterSchema.first?.name, "name")
     }
 
     func testToolConstructionWithMultipleParameters() {
-        let tool = Tool(
+        let tool = TypedTool<SearchParams, SearchResult>(
             name: "search",
             description: "Search for items.",
-            parameters: [
+            parameterSchema: [
                 ToolParameter(name: "query", type: "string", description: "Search query.", required: true),
                 ToolParameter(name: "limit", type: "integer", description: "Max results.", required: false),
                 ToolParameter(name: "offset", type: "integer", description: "Pagination offset.", required: false),
             ],
-            handler: { _ in "results" }
+            handler: { _ in SearchResult(results: "results") }
         )
 
-        XCTAssertEqual(tool.parameters.count, 3)
-        XCTAssertEqual(tool.parameters.map(\.name), ["query", "limit", "offset"])
+        XCTAssertEqual(tool.parameterSchema.count, 3)
+        XCTAssertEqual(tool.parameterSchema.map(\.name), ["query", "limit", "offset"])
     }
 
     func testToolConstructionWithNoParameters() {
-        let tool = Tool(
+        let tool = TypedTool<NowParams, NowResult>(
             name: "now",
             description: "Returns the current time.",
-            parameters: [],
-            handler: { _ in "12:00" }
+            parameterSchema: [],
+            handler: { _ in NowResult(time: "12:00") }
         )
 
-        XCTAssertEqual(tool.parameters.count, 0)
+        XCTAssertEqual(tool.parameterSchema.count, 0)
     }
 
-    // MARK: - Handler invocation
+    // MARK: - Handler invocation (round-trip bridging)
 
     func testHandlerInvocationWithMatchingParams() async throws {
-        let tool = Tool(
+        let tool = TypedTool<AddParams, AddResult>(
             name: "add",
             description: "Adds two numbers.",
-            parameters: [
+            parameterSchema: [
                 ToolParameter(name: "a", type: "integer", description: "First operand.", required: true),
                 ToolParameter(name: "b", type: "integer", description: "Second operand.", required: true),
             ],
             handler: { params in
-                let a = Int(params["a"] ?? "") ?? 0
-                let b = Int(params["b"] ?? "") ?? 0
-                return "\(a + b)"
+                AddResult(sum: params.a + params.b)
             }
         )
 
-        let result = try await tool.handler(["a": "3", "b": "4"])
-        XCTAssertEqual(result, "7")
+        let input = try JSONEncoder().encode(AddParams(a: 3, b: 4))
+        let output = try await tool.handle(input)
+        let result = try JSONDecoder().decode(AddResult.self, from: output)
+
+        XCTAssertEqual(result.sum, 7)
     }
 
     func testHandlerInvocationWithFewerParams() async throws {
-        let tool = Tool(
+        let tool = TypedTool<GreetParams, GreetResult>(
             name: "greet",
             description: "Greets a user with optional title.",
-            parameters: [
+            parameterSchema: [
                 ToolParameter(name: "name", type: "string", description: "User name.", required: true),
                 ToolParameter(name: "title", type: "string", description: "Honorific.", required: false),
             ],
             handler: { params in
-                let name = params["name"] ?? "there"
-                let title = params["title"] ?? ""
+                let title = params.title ?? ""
                 let prefix = title.isEmpty ? "Hello" : "Hello \(title)"
-                return "\(prefix) \(name)"
+                return GreetResult(greeting: "\(prefix) \(params.name)")
             }
         )
 
         // Only provide the required param — title is omitted.
-        let result = try await tool.handler(["name": "Alice"])
-        XCTAssertEqual(result, "Hello Alice")
+        let input = try JSONEncoder().encode(GreetParams(name: "Alice", title: nil))
+        let output = try await tool.handle(input)
+        let result = try JSONDecoder().decode(GreetResult.self, from: output)
+
+        XCTAssertEqual(result.greeting, "Hello Alice")
     }
 
     func testHandlerInvocationWithExtraParams() async throws {
-        let tool = Tool(
+        let tool = TypedTool<LogParams, LogResult>(
             name: "log",
             description: "Logs a message.",
-            parameters: [
+            parameterSchema: [
                 ToolParameter(name: "level", type: "string", description: "Log level.", required: true),
             ],
             handler: { params in
-                // Handler ignores extra keys gracefully.
-                "\(params["level"] ?? "info"): \(params.count) keys received"
+                // Handler only sees the declared key — Codable ignores unknown keys.
+                LogResult(output: "\(params.level): logged")
             }
         )
 
-        let result = try await tool.handler([
+        // Include extra keys that LogParams does not declare.
+        let rawJSON: [String: Any] = [
             "level": "error",
             "source": "unit-test",
-            "line": "42",
-        ])
-        XCTAssertTrue(result.contains("error"))
-        XCTAssertTrue(result.contains("3 keys received"))
+            "line": 42,
+        ]
+        let input = try JSONSerialization.data(withJSONObject: rawJSON)
+        let output = try await tool.handle(input)
+        let result = try JSONDecoder().decode(LogResult.self, from: output)
+
+        XCTAssertTrue(result.output.contains("error"))
+        XCTAssertTrue(result.output.contains("logged"))
     }
 
     func testHandlerInvocationWithEmptyParams() async throws {
-        let tool = Tool(
+        let tool = TypedTool<EmptyParams, EmptyResult>(
             name: "ping",
             description: "Always returns pong.",
-            parameters: [],
-            handler: { params in
-                "pong (\(params.count) params)"
+            parameterSchema: [],
+            handler: { _ in
+                EmptyResult(pong: "pong")
             }
         )
 
-        let result = try await tool.handler([:])
-        XCTAssertEqual(result, "pong (0 params)")
+        let input = try JSONEncoder().encode(EmptyParams())
+        let output = try await tool.handle(input)
+        let result = try JSONDecoder().decode(EmptyResult.self, from: output)
+
+        XCTAssertEqual(result.pong, "pong")
     }
 
     func testHandlerThrowsError() async throws {
-        let tool = Tool(
+        let tool = TypedTool<EmptyParams, EmptyResult>(
             name: "crash",
             description: "Always throws.",
-            parameters: [],
+            parameterSchema: [],
             handler: { _ in
                 throw NSError(domain: "ToolError", code: 99, userInfo: [NSLocalizedDescriptionKey: "simulated failure"])
             }
         )
 
         do {
-            _ = try await tool.handler([:])
+            let input = try JSONEncoder().encode(EmptyParams())
+            _ = try await tool.handle(input)
             XCTFail("Expected handler to throw")
         } catch let error as NSError {
             XCTAssertEqual(error.code, 99)

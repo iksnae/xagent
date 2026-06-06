@@ -12,10 +12,10 @@ final class XAgentCoreTests: XCTestCase {
         // 2. Build a tool registry with echo and date tools.
         let toolRegistry = ToolRegistry()
 
-        let echoTool = Tool(
+        let echoTool = TypedTool<EchoParams, EchoResult>(
             name: "echo",
             description: "Returns the input message unchanged.",
-            parameters: [
+            parameterSchema: [
                 ToolParameter(
                     name: "message",
                     type: "string",
@@ -24,16 +24,16 @@ final class XAgentCoreTests: XCTestCase {
                 )
             ],
             handler: { params in
-                params["message"] ?? "(no message provided)"
+                EchoResult(echoed: params.message)
             }
         )
 
-        let dateTool = Tool(
+        let dateTool = TypedTool<DateParams, DateResult>(
             name: "date",
             description: "Returns the current date and time in ISO 8601 format.",
-            parameters: [],
+            parameterSchema: [],
             handler: { _ in
-                Date().ISO8601Format()
+                DateResult(iso8601: Date().ISO8601Format())
             }
         )
 
@@ -89,14 +89,14 @@ final class XAgentCoreTests: XCTestCase {
         )
 
         let toolRegistry = ToolRegistry()
-        try await toolRegistry.register(Tool(
+        try await toolRegistry.register(TypedTool<EchoParams, EchoResult>(
             name: "echo",
             description: "Echoes input back.",
-            parameters: [
+            parameterSchema: [
                 ToolParameter(name: "message", type: "string", description: "Text to echo.", required: true)
             ],
             handler: { params in
-                params["message"] ?? "(no message)"
+                EchoResult(echoed: params.message)
             }
         ))
 
