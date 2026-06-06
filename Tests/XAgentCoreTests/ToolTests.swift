@@ -58,6 +58,12 @@ struct NowResult: ToolResult {
     let time: String
 }
 
+struct DateParams: ToolParameters {}
+
+struct DateResult: ToolResult {
+    let iso8601: String
+}
+
 final class ToolTests: XCTestCase {
 
     // MARK: - ToolParameter tests

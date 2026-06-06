@@ -16,7 +16,7 @@ struct EchoResult: ToolResult {
 struct DateParams: ToolParameters {}
 
 struct DateResult: ToolResult {
-    let date: String
+    let iso8601: String
 }
 
 @main
@@ -49,7 +49,7 @@ struct XAgentCLI {
             description: "Returns the current date and time in ISO 8601 format.",
             parameterSchema: [],
             handler: { _ in
-                DateResult(date: Date().ISO8601Format())
+                DateResult(iso8601: Date().ISO8601Format())
             }
         )
 
