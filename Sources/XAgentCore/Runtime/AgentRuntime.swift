@@ -163,7 +163,7 @@ public actor AgentRuntime {
         do {
             let inputData = try JSONEncoder().encode(call.parameters)
             let outputData = try await tool.handle(inputData)
-            return String(data: outputData, encoding: .utf8) ?? ""
+            return String(data: outputData, encoding: .utf8) ?? String(describing: outputData)
         } catch {
             throw AgentRuntimeError.toolExecutionFailed(call.name, error)
         }
