@@ -346,6 +346,12 @@ final class AgentRuntimeTests: XCTestCase {
     }
 
     // MARK: - Streaming tool-call resolution
+    //
+    // These tests verify that runStreaming(task:) correctly parses tool-call
+    // blocks from accumulated stream chunks, executes the requested tools,
+    // and yields tool results as additional stream elements after the LLM
+    // chunks. Error paths (toolNotFound, toolExecutionFailed) are also
+    // verified to throw the correct AgentRuntimeError through the stream.
 
     func testRunStreamingWithToolCallYieldsToolResultAfterChunks() async throws {
         let agent = makeTestAgent()
@@ -417,6 +423,12 @@ final class AgentRuntimeTests: XCTestCase {
         // LLM chunks + two tool results.
         XCTAssertEqual(received.count, chunks.count + 2,
                        "Should have LLM chunks plus two tool-result chunks")
+
+        // First N chunks should be the LLM output unchanged.
+        for (i, expectedChunk) in chunks.enumerated() {
+            XCTAssertEqual(received[i], expectedChunk,
+                           "LLM chunk \(i) should match the provider chunk")
+        }
 
         // Last two chunks should be tool results.
         let toolResults = received.suffix(2)
