@@ -136,6 +136,50 @@ final class AgentRuntimeTests: XCTestCase {
         }
     }
 
+    func testToolExecutionFailedThrowsError() async throws {
+        let agent = makeTestAgent()
+        let registry = ToolRegistry()
+
+        // Register a tool whose handler always throws.
+        let failingTool = Tool(
+            name: "flaky",
+            description: "Always throws an error.",
+            parameters: [],
+            handler: { _ in
+                throw NSError(domain: "ToolFlake", code: 42, userInfo: [NSLocalizedDescriptionKey: "flake"])
+            }
+        )
+        try await registry.register(failingTool)
+
+        let toolCallResponse = """
+        <tool_call>
+        name: flaky
+        </tool_call>
+        """
+        let provider = TestToolCallProvider(response: toolCallResponse)
+
+        let runtime = AgentRuntime(
+            agent: agent,
+            toolRegistry: registry,
+            provider: provider
+        )
+
+        do {
+            _ = try await runtime.run(task: "Trigger the flaky tool")
+            XCTFail("Expected toolExecutionFailed error")
+        } catch let error as AgentRuntimeError {
+            switch error {
+            case .toolExecutionFailed(let name, let underlying):
+                XCTAssertEqual(name, "flaky")
+                let nsError = underlying as NSError
+                XCTAssertEqual(nsError.domain, "ToolFlake")
+                XCTAssertEqual(nsError.code, 42)
+            case .toolNotFound:
+                XCTFail("Expected toolExecutionFailed, got toolNotFound")
+            }
+        }
+    }
+
     // MARK: - Prompt construction
 
     func testPromptIncludesSystemPromptAndTask() async throws {
