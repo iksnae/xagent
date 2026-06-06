@@ -11,6 +11,7 @@ let package = Package(
     products: [
         .library(name: "XAgentCore", targets: ["XAgentCore"]),
         .executable(name: "xagentcli", targets: ["XAgentCLI"]),
+        .executable(name: "xagentd", targets: ["XAgentDaemon"]),
     ],
     targets: [
         .target(
@@ -22,10 +23,20 @@ let package = Package(
             dependencies: ["XAgentCore"],
             path: "Sources/XAgentCLI"
         ),
+        .executableTarget(
+            name: "XAgentDaemon",
+            dependencies: ["XAgentCore"],
+            path: "Sources/XAgentDaemon"
+        ),
         .testTarget(
             name: "XAgentCoreTests",
             dependencies: ["XAgentCore"],
             path: "Tests/XAgentCoreTests"
+        ),
+        .testTarget(
+            name: "XAgentDaemonTests",
+            dependencies: ["XAgentDaemon"],
+            path: "Tests/XAgentDaemonTests"
         ),
     ]
 )
