@@ -1,0 +1,3 @@
+# Runtime state is local-only — never commit it to the work repo.
+# (Event ledger, database, and projections regenerate on each run.)
+state/
