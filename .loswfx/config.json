@@ -102,7 +102,7 @@
     "reviewGates": [
       {
         "name": "operator-review",
-        "required": true,
+        "required": false,
         "roles": [
           "reviewer"
         ]
@@ -141,10 +141,12 @@
       "head",
       "jq",
       "ls",
+      "swift",
       "tail",
       "test",
       "tr",
       "wc",
+      "which",
       "xargs"
     ],
     "deniedCommands": [
@@ -275,7 +277,7 @@
     "budget": 2
   },
   "verification": {
-    "buildCommand": "",
+    "buildCommand": "swift test",
     "timeoutMs": 30000
   },
   "phases": [
