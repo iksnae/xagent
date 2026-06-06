@@ -66,29 +66,30 @@ public actor AgentRuntime {
     public func runStreaming(task: String) -> AsyncThrowingStream<String, Error> {
         let prompt = buildPrompt(task: task)
         let providerStream = provider.stream(prompt: prompt)
+        let (stream, continuation) = AsyncThrowingStream<String, Error>.makeStream()
 
-        return AsyncThrowingStream { continuation in
-            Task {
-                do {
-                    var buffer = ""
-                    for try await chunk in providerStream {
-                        buffer += chunk
-                        continuation.yield(chunk)
-                    }
-
-                    // After the LLM stream finishes, resolve any tool calls.
-                    let calls = parseToolCalls(from: buffer)
-                    for call in calls {
-                        let result = try await executeToolCall(call)
-                        continuation.yield("\n\n[Tool \(call.name) result]: \(result)")
-                    }
-
-                    continuation.finish()
-                } catch {
-                    continuation.finish(throwing: error)
+        Task {
+            do {
+                var buffer = ""
+                for try await chunk in providerStream {
+                    buffer += chunk
+                    continuation.yield(chunk)
                 }
+
+                // After the LLM stream finishes, resolve any tool calls.
+                let calls = parseToolCalls(from: buffer)
+                for call in calls {
+                    let result = try await executeToolCall(call)
+                    continuation.yield("\n\n[Tool \(call.name) result]: \(result)")
+                }
+
+                continuation.finish()
+            } catch {
+                continuation.finish(throwing: error)
             }
         }
+
+        return stream
     }
 
     // MARK: - Private helpers

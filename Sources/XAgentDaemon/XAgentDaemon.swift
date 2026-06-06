@@ -176,46 +176,47 @@ public actor XAgentDaemon {
     /// - Returns: An `AsyncThrowingStream` that yields LLM chunks and tool results.
     public func runStreaming(task: String) async -> AsyncThrowingStream<String, Error> {
         let runtimeStream = await runtime.runStreaming(task: task)
+        let (stream, continuation) = AsyncThrowingStream<String, Error>.makeStream()
 
-        return AsyncThrowingStream { continuation in
-            Task {
-                let startedAt = Date()
-                var buffer = ""
+        Task {
+            let startedAt = Date()
+            var buffer = ""
 
-                do {
-                    for try await chunk in runtimeStream {
-                        buffer += chunk
-                        continuation.yield(chunk)
-                    }
-
-                    let finishedAt = Date()
-                    let event = RunEvent(
-                        task: task,
-                        startedAt: startedAt,
-                        finishedAt: finishedAt,
-                        result: buffer,
-                        error: nil
-                    )
-                    await self.eventStore.record(event)
-                    await self.incrementRunCount()
-
-                    continuation.finish()
-                } catch {
-                    let finishedAt = Date()
-                    let event = RunEvent(
-                        task: task,
-                        startedAt: startedAt,
-                        finishedAt: finishedAt,
-                        result: nil,
-                        error: String(describing: error)
-                    )
-                    await self.eventStore.record(event)
-                    await self.incrementRunCount()
-
-                    continuation.finish(throwing: error)
+            do {
+                for try await chunk in runtimeStream {
+                    buffer += chunk
+                    continuation.yield(chunk)
                 }
+
+                let finishedAt = Date()
+                let event = RunEvent(
+                    task: task,
+                    startedAt: startedAt,
+                    finishedAt: finishedAt,
+                    result: buffer,
+                    error: nil
+                )
+                await self.eventStore.record(event)
+                await self.incrementRunCount()
+
+                continuation.finish()
+            } catch {
+                let finishedAt = Date()
+                let event = RunEvent(
+                    task: task,
+                    startedAt: startedAt,
+                    finishedAt: finishedAt,
+                    result: nil,
+                    error: String(describing: error)
+                )
+                await self.eventStore.record(event)
+                await self.incrementRunCount()
+
+                continuation.finish(throwing: error)
             }
         }
+
+        return stream
     }
 
     // MARK: - Private helpers

@@ -13,6 +13,7 @@ let package = Package(
         .library(name: "XAgentHTTP", targets: ["XAgentHTTP"]),
         .executable(name: "xagentcli", targets: ["XAgentCLI"]),
         .executable(name: "xagentd", targets: ["XAgentDaemon"]),
+        .executable(name: "XAgentApp", targets: ["XAgentApp"]),
     ],
     targets: [
         .target(
@@ -33,6 +34,11 @@ let package = Package(
             name: "XAgentDaemon",
             dependencies: ["XAgentCore", "XAgentHTTP"],
             path: "Sources/XAgentDaemon"
+        ),
+        .executableTarget(
+            name: "XAgentApp",
+            dependencies: [],
+            path: "Sources/XAgentApp"
         ),
         .testTarget(
             name: "XAgentCoreTests",
