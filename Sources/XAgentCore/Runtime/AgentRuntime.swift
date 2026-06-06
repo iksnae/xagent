@@ -56,11 +56,13 @@ public actor AgentRuntime {
     /// Runs the agent for a given user task in streaming mode.
     ///
     /// Each chunk from the LLM provider is yielded to the consumer as it arrives.
-    /// The stream terminates when the provider's stream finishes (no tool-call
-    /// resolution is performed yet).
+    /// After the LLM stream finishes, the accumulated response is scanned for
+    /// `<tool_call>…</tool_call>` blocks, each tool is executed, and the tool
+    /// results are yielded as additional stream elements before the stream finishes.
     ///
     /// - Parameter task: The user's natural-language task description.
-    /// - Returns: An `AsyncThrowingStream` that yields LLM response chunks in order.
+    /// - Returns: An `AsyncThrowingStream` that yields LLM response chunks in order,
+    ///   followed by any tool execution results.
     public func runStreaming(task: String) -> AsyncThrowingStream<String, Error> {
         let prompt = buildPrompt(task: task)
         let providerStream = provider.stream(prompt: prompt)
@@ -73,6 +75,14 @@ public actor AgentRuntime {
                         buffer += chunk
                         continuation.yield(chunk)
                     }
+
+                    // After the LLM stream finishes, resolve any tool calls.
+                    let calls = parseToolCalls(from: buffer)
+                    for call in calls {
+                        let result = try await executeToolCall(call)
+                        continuation.yield("\n\n[Tool \(call.name) result]: \(result)")
+                    }
+
                     continuation.finish()
                 } catch {
                     continuation.finish(throwing: error)
