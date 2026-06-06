@@ -3,6 +3,22 @@ import XAgentCore
 
 // MARK: - Smoke-test CLI for xagent M1
 
+// MARK: Tool parameter & result types
+
+struct EchoParams: ToolParameters {
+    let message: String
+}
+
+struct EchoResult: ToolResult {
+    let echoed: String
+}
+
+struct DateParams: ToolParameters {}
+
+struct DateResult: ToolResult {
+    let date: String
+}
+
 @main
 struct XAgentCLI {
     static func main() async throws {
@@ -12,10 +28,10 @@ struct XAgentCLI {
         // 2. Build a tool registry with demo tools: echo and date.
         let toolRegistry = ToolRegistry()
 
-        let echoTool = Tool(
+        let echoTool = TypedTool<EchoParams, EchoResult>(
             name: "echo",
             description: "Returns the input message unchanged.",
-            parameters: [
+            parameterSchema: [
                 ToolParameter(
                     name: "message",
                     type: "string",
@@ -24,16 +40,16 @@ struct XAgentCLI {
                 )
             ],
             handler: { params in
-                params["message"] ?? "(no message provided)"
+                EchoResult(echoed: params.message)
             }
         )
 
-        let dateTool = Tool(
+        let dateTool = TypedTool<DateParams, DateResult>(
             name: "date",
             description: "Returns the current date and time in ISO 8601 format.",
-            parameters: [],
+            parameterSchema: [],
             handler: { _ in
-                Date().ISO8601Format()
+                DateResult(date: Date().ISO8601Format())
             }
         )
 

@@ -161,7 +161,9 @@ public actor AgentRuntime {
             throw AgentRuntimeError.toolNotFound(call.name)
         }
         do {
-            return try await tool.handler(call.parameters)
+            let inputData = try JSONEncoder().encode(call.parameters)
+            let outputData = try await tool.handle(inputData)
+            return String(data: outputData, encoding: .utf8) ?? ""
         } catch {
             throw AgentRuntimeError.toolExecutionFailed(call.name, error)
         }
