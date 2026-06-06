@@ -27,6 +27,25 @@
     "model": "deepseek-v4-pro",
     "timeoutMs": 30000
   },
+  "providers": {
+    "codex": {
+      "kind": "codex",
+      "mode": "subscription",
+      "baseUrl": "https://chatgpt.com/backend-api",
+      "model": "gpt-5.5",
+      "timeoutMs": 30000
+    },
+    "deepseek": {
+      "kind": "deepseek",
+      "mode": "hosted",
+      "baseUrl": "https://api.deepseek.com",
+      "apiKeyEnv": "DEEPSEEK_API_KEY",
+      "hostedProvider": "deepseek",
+      "model": "deepseek-v4-pro",
+      "timeoutMs": 30000
+    }
+  },
+  "activeProvider": "deepseek",
   "runner": {
     "kind": "local-shell",
     "environment": "local"
@@ -56,6 +75,26 @@
       },
       {
         "name": "designer",
+        "provider": "deepseek",
+        "model": "deepseek-v4-pro"
+      },
+      {
+        "name": "intake",
+        "provider": "deepseek",
+        "model": "deepseek-v4-pro"
+      },
+      {
+        "name": "plan-reviewer",
+        "provider": "deepseek",
+        "model": "deepseek-v4-pro"
+      },
+      {
+        "name": "decomposer",
+        "provider": "deepseek",
+        "model": "deepseek-v4-pro"
+      },
+      {
+        "name": "researcher",
         "provider": "deepseek",
         "model": "deepseek-v4-pro"
       }
@@ -320,13 +359,13 @@
   "skills": {
     "path": ".loswfx/skills"
   },
-  "shadow": {
-    "path": "/Users/khaos/Projects/shadow-xagent",
-    "repo": "loswf/shadow-xagent"
+  "shadow": {},
+  "cost": {
+    "source": "factory"
   },
-  "cost": {},
   "engagement": {
     "ownerRepo": "iksnae/xagent",
-    "approvals": {}
+    "approvals": {},
+    "defaultWorkflow": "ongoing-development"
   }
 }
