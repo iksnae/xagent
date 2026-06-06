@@ -26,9 +26,10 @@ final class TestToolCallProvider: LLMProvider, @unchecked Sendable {
     }
 }
 
-/// A streaming provider that yields a fixed sequence of chunks.
+/// A streaming provider that yields a fixed sequence of chunks and tracks lastPrompt.
 final class ChunkedStreamProvider: LLMProvider, @unchecked Sendable {
     let chunks: [String]
+    var lastPrompt: String?
 
     init(chunks: [String]) {
         self.chunks = chunks
@@ -39,7 +40,8 @@ final class ChunkedStreamProvider: LLMProvider, @unchecked Sendable {
     }
 
     func stream(prompt: String) -> AsyncThrowingStream<String, Error> {
-        AsyncThrowingStream { continuation in
+        lastPrompt = prompt
+        return AsyncThrowingStream { continuation in
             for chunk in self.chunks {
                 continuation.yield(chunk)
             }
@@ -313,6 +315,34 @@ final class AgentRuntimeTests: XCTestCase {
             "[System]: You are a helpful assistant.\n\n[User]: Hello",
         ]
         XCTAssertEqual(chunks, expectedChunks, "Streaming chunks should match MockProvider output in order")
+    }
+
+    // MARK: - Streaming prompt construction
+
+    func testRunStreamingPromptIncludesSystemPromptAndTask() async throws {
+        let agent = DefaultAgent(
+            identifier: "test-agent",
+            systemPrompt: "You are a streaming test bot."
+        )
+        let registry = ToolRegistry()
+        let chunks: [String] = ["Hello ", "streaming ", "world!"]
+        let provider = ChunkedStreamProvider(chunks: chunks)
+
+        let runtime = AgentRuntime(
+            agent: agent,
+            toolRegistry: registry,
+            provider: provider
+        )
+
+        let stream = await runtime.runStreaming(task: "Do something streaming")
+        // Drain the stream to completion so lastPrompt is captured.
+        for try await _ in stream { }
+
+        let prompt = provider.lastPrompt ?? ""
+        XCTAssertTrue(prompt.contains("You are a streaming test bot."),
+                       "Prompt should include system prompt")
+        XCTAssertTrue(prompt.contains("Do something streaming"),
+                       "Prompt should include the user task")
     }
 
     // MARK: - Streaming tool-call resolution
