@@ -238,4 +238,34 @@ final class AgentRuntimeTests: XCTestCase {
         XCTAssertTrue(result.contains("second"), "Result should contain second echo")
         XCTAssertEqual(provider.completeCallCount, 1)
     }
+
+    // MARK: - Streaming
+
+    func testRunStreamingWithMockProviderYieldsChunksInOrder() async throws {
+        let agent = makeTestAgent()
+        let registry = ToolRegistry()
+        let provider = MockProvider()
+
+        let runtime = AgentRuntime(
+            agent: agent,
+            toolRegistry: registry,
+            provider: provider
+        )
+
+        let stream = await runtime.runStreaming(task: "Hello")
+
+        var chunks: [String] = []
+        for try await chunk in stream {
+            chunks.append(chunk)
+        }
+
+        let expectedChunks = [
+            "Mock ",
+            "streaming ",
+            "response ",
+            "for: ",
+            "[System]: You are a helpful assistant.\n\n[User]: Hello",
+        ]
+        XCTAssertEqual(chunks, expectedChunks, "Streaming chunks should match MockProvider output in order")
+    }
 }

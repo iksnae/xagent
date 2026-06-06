@@ -53,6 +53,34 @@ public actor AgentRuntime {
         return finalResponse
     }
 
+    /// Runs the agent for a given user task in streaming mode.
+    ///
+    /// Each chunk from the LLM provider is yielded to the consumer as it arrives.
+    /// The stream terminates when the provider's stream finishes (no tool-call
+    /// resolution is performed yet).
+    ///
+    /// - Parameter task: The user's natural-language task description.
+    /// - Returns: An `AsyncThrowingStream` that yields LLM response chunks in order.
+    public func runStreaming(task: String) -> AsyncThrowingStream<String, Error> {
+        let prompt = buildPrompt(task: task)
+        let providerStream = provider.stream(prompt: prompt)
+
+        return AsyncThrowingStream { continuation in
+            Task {
+                do {
+                    var buffer = ""
+                    for try await chunk in providerStream {
+                        buffer += chunk
+                        continuation.yield(chunk)
+                    }
+                    continuation.finish()
+                } catch {
+                    continuation.finish(throwing: error)
+                }
+            }
+        }
+    }
+
     // MARK: - Private helpers
 
     private func buildPrompt(task: String) -> String {
