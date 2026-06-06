@@ -26,6 +26,54 @@ final class TestToolCallProvider: LLMProvider, @unchecked Sendable {
     }
 }
 
+/// A streaming provider that yields a fixed sequence of chunks and tracks lastPrompt.
+final class ChunkedStreamProvider: LLMProvider, @unchecked Sendable {
+    let chunks: [String]
+    var lastPrompt: String?
+
+    init(chunks: [String]) {
+        self.chunks = chunks
+    }
+
+    func complete(prompt: String) async throws -> String {
+        chunks.joined()
+    }
+
+    func stream(prompt: String) -> AsyncThrowingStream<String, Error> {
+        lastPrompt = prompt
+        return AsyncThrowingStream { continuation in
+            for chunk in self.chunks {
+                continuation.yield(chunk)
+            }
+            continuation.finish()
+        }
+    }
+}
+
+/// A streaming provider that throws after yielding all chunks.
+final class FailingStreamProvider: LLMProvider, @unchecked Sendable {
+    let chunks: [String]
+    let failure: Error
+
+    init(chunks: [String], failure: Error) {
+        self.chunks = chunks
+        self.failure = failure
+    }
+
+    func complete(prompt: String) async throws -> String {
+        throw failure
+    }
+
+    func stream(prompt: String) -> AsyncThrowingStream<String, Error> {
+        AsyncThrowingStream { continuation in
+            for chunk in self.chunks {
+                continuation.yield(chunk)
+            }
+            continuation.finish(throwing: self.failure)
+        }
+    }
+}
+
 final class AgentRuntimeTests: XCTestCase {
 
     // MARK: - Helpers
@@ -237,5 +285,264 @@ final class AgentRuntimeTests: XCTestCase {
         XCTAssertTrue(result.contains("first"), "Result should contain first echo")
         XCTAssertTrue(result.contains("second"), "Result should contain second echo")
         XCTAssertEqual(provider.completeCallCount, 1)
+    }
+
+    // MARK: - Streaming
+
+    func testRunStreamingWithMockProviderYieldsChunksInOrder() async throws {
+        let agent = makeTestAgent()
+        let registry = ToolRegistry()
+        let provider = MockProvider()
+
+        let runtime = AgentRuntime(
+            agent: agent,
+            toolRegistry: registry,
+            provider: provider
+        )
+
+        let stream = await runtime.runStreaming(task: "Hello")
+
+        var chunks: [String] = []
+        for try await chunk in stream {
+            chunks.append(chunk)
+        }
+
+        let expectedChunks = [
+            "Mock ",
+            "streaming ",
+            "response ",
+            "for: ",
+            "[System]: You are a helpful assistant.\n\n[User]: Hello",
+        ]
+        XCTAssertEqual(chunks, expectedChunks, "Streaming chunks should match MockProvider output in order")
+    }
+
+    // MARK: - Streaming prompt construction
+
+    func testRunStreamingPromptIncludesSystemPromptAndTask() async throws {
+        let agent = DefaultAgent(
+            identifier: "test-agent",
+            systemPrompt: "You are a streaming test bot."
+        )
+        let registry = ToolRegistry()
+        let chunks: [String] = ["Hello ", "streaming ", "world!"]
+        let provider = ChunkedStreamProvider(chunks: chunks)
+
+        let runtime = AgentRuntime(
+            agent: agent,
+            toolRegistry: registry,
+            provider: provider
+        )
+
+        let stream = await runtime.runStreaming(task: "Do something streaming")
+        // Drain the stream to completion so lastPrompt is captured.
+        for try await _ in stream { }
+
+        let prompt = provider.lastPrompt ?? ""
+        XCTAssertTrue(prompt.contains("You are a streaming test bot."),
+                       "Prompt should include system prompt")
+        XCTAssertTrue(prompt.contains("Do something streaming"),
+                       "Prompt should include the user task")
+    }
+
+    // MARK: - Streaming tool-call resolution
+    //
+    // These tests verify that runStreaming(task:) correctly parses tool-call
+    // blocks from accumulated stream chunks, executes the requested tools,
+    // and yields tool results as additional stream elements after the LLM
+    // chunks. Error paths (toolNotFound, toolExecutionFailed) are also
+    // verified to throw the correct AgentRuntimeError through the stream.
+
+    func testRunStreamingWithToolCallYieldsToolResultAfterChunks() async throws {
+        let agent = makeTestAgent()
+        let registry = ToolRegistry()
+        try await registry.register(makeEchoTool())
+
+        // Chunks that, when accumulated, contain a tool_call block.
+        let chunks: [String] = [
+            "I'll help with that.\n\n",
+            "<tool_call>\n",
+            "name: echo\n",
+            "message: streaming hello\n",
+            "</tool_call>",
+        ]
+        let provider = ChunkedStreamProvider(chunks: chunks)
+
+        let runtime = AgentRuntime(
+            agent: agent,
+            toolRegistry: registry,
+            provider: provider
+        )
+
+        let stream = await runtime.runStreaming(task: "Echo via stream")
+
+        var received: [String] = []
+        for try await chunk in stream {
+            received.append(chunk)
+        }
+
+        // First N chunks should be the LLM output.
+        XCTAssertEqual(received.count, chunks.count + 1,
+                       "Should have LLM chunks plus one tool-result chunk")
+        for (i, expectedChunk) in chunks.enumerated() {
+            XCTAssertEqual(received[i], expectedChunk,
+                           "Chunk \(i) should match the provider chunk")
+        }
+        // Last chunk is the tool result.
+        XCTAssertTrue(received.last?.contains("[Tool echo result]") ?? false,
+                      "Last chunk should be the tool result")
+        XCTAssertTrue(received.last?.contains("streaming hello") ?? false,
+                      "Tool result should contain the echoed message")
+    }
+
+    func testRunStreamingWithMultipleToolCallsYieldsAllToolResults() async throws {
+        let agent = makeTestAgent()
+        let registry = ToolRegistry()
+        try await registry.register(makeEchoTool())
+
+        let chunks: [String] = [
+            "Let me echo twice.\n\n",
+            "<tool_call>\nname: echo\nmessage: first\n</tool_call>\n\n",
+            "<tool_call>\nname: echo\nmessage: second\n</tool_call>",
+        ]
+        let provider = ChunkedStreamProvider(chunks: chunks)
+
+        let runtime = AgentRuntime(
+            agent: agent,
+            toolRegistry: registry,
+            provider: provider
+        )
+
+        let stream = await runtime.runStreaming(task: "Echo twice via stream")
+
+        var received: [String] = []
+        for try await chunk in stream {
+            received.append(chunk)
+        }
+
+        // LLM chunks + two tool results.
+        XCTAssertEqual(received.count, chunks.count + 2,
+                       "Should have LLM chunks plus two tool-result chunks")
+
+        // First N chunks should be the LLM output unchanged.
+        for (i, expectedChunk) in chunks.enumerated() {
+            XCTAssertEqual(received[i], expectedChunk,
+                           "LLM chunk \(i) should match the provider chunk")
+        }
+
+        // Last two chunks should be tool results.
+        let toolResults = received.suffix(2)
+        let resultsJoined = toolResults.joined()
+        XCTAssertTrue(resultsJoined.contains("first"),
+                      "Tool results should contain first echo")
+        XCTAssertTrue(resultsJoined.contains("second"),
+                      "Tool results should contain second echo")
+        XCTAssertTrue(resultsJoined.contains("[Tool echo result]"),
+                      "Tool results should be marked with [Tool echo result]")
+    }
+
+    func testRunStreamingToolNotFoundThrowsError() async throws {
+        let agent = makeTestAgent()
+        let registry = ToolRegistry() // empty — no tools registered
+
+        let chunks: [String] = [
+            "Calling a missing tool.\n",
+            "<tool_call>\nname: ghost\nparam: val\n</tool_call>",
+        ]
+        let provider = ChunkedStreamProvider(chunks: chunks)
+
+        let runtime = AgentRuntime(
+            agent: agent,
+            toolRegistry: registry,
+            provider: provider
+        )
+
+        let stream = await runtime.runStreaming(task: "Use missing tool via stream")
+
+        do {
+            for try await _ in stream { }
+            XCTFail("Expected toolNotFound error to be thrown from stream")
+        } catch let error as AgentRuntimeError {
+            switch error {
+            case .toolNotFound(let name):
+                XCTAssertEqual(name, "ghost")
+            case .toolExecutionFailed:
+                XCTFail("Expected toolNotFound, got toolExecutionFailed")
+            }
+        }
+    }
+
+    func testRunStreamingToolExecutionFailedThrowsError() async throws {
+        let agent = makeTestAgent()
+        let registry = ToolRegistry()
+
+        let failingTool = Tool(
+            name: "flaky",
+            description: "Always throws an error.",
+            parameters: [],
+            handler: { _ in
+                throw NSError(domain: "ToolFlake", code: 99, userInfo: [NSLocalizedDescriptionKey: "stream flake"])
+            }
+        )
+        try await registry.register(failingTool)
+
+        let chunks: [String] = [
+            "Triggering flaky.\n",
+            "<tool_call>\nname: flaky\n</tool_call>",
+        ]
+        let provider = ChunkedStreamProvider(chunks: chunks)
+
+        let runtime = AgentRuntime(
+            agent: agent,
+            toolRegistry: registry,
+            provider: provider
+        )
+
+        let stream = await runtime.runStreaming(task: "Trigger flaky via stream")
+
+        do {
+            for try await _ in stream { }
+            XCTFail("Expected toolExecutionFailed error to be thrown from stream")
+        } catch let error as AgentRuntimeError {
+            switch error {
+            case .toolExecutionFailed(let name, let underlying):
+                XCTAssertEqual(name, "flaky")
+                let nsError = underlying as NSError
+                XCTAssertEqual(nsError.domain, "ToolFlake")
+                XCTAssertEqual(nsError.code, 99)
+            case .toolNotFound:
+                XCTFail("Expected toolExecutionFailed, got toolNotFound")
+            }
+        }
+    }
+
+    func testRunStreamingWithoutToolCallYieldsOnlyChunks() async throws {
+        let agent = makeTestAgent()
+        let registry = ToolRegistry()
+        try await registry.register(makeEchoTool())
+
+        let chunks: [String] = [
+            "Just a ",
+            "plain response ",
+            "with no tool calls.",
+        ]
+        let provider = ChunkedStreamProvider(chunks: chunks)
+
+        let runtime = AgentRuntime(
+            agent: agent,
+            toolRegistry: registry,
+            provider: provider
+        )
+
+        let stream = await runtime.runStreaming(task: "Say hello")
+
+        var received: [String] = []
+        for try await chunk in stream {
+            received.append(chunk)
+        }
+
+        XCTAssertEqual(received, chunks,
+                       "When no tool calls exist, chunks should match provider exactly")
+        XCTAssertEqual(received.joined(), "Just a plain response with no tool calls.")
     }
 }
