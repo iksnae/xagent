@@ -15,28 +15,6 @@ public struct ToolParameter: Sendable {
     }
 }
 
-/// A callable tool registered with the agent runtime.  Each tool has a name,
-/// a human-readable description, a typed parameter schema, and an async
-/// handler that receives string-keyed parameter values and returns a result.
-public struct Tool: Sendable {
-    public let name: String
-    public let description: String
-    public let parameters: [ToolParameter]
-    public let handler: @Sendable ([String: String]) async throws -> String
-
-    public init(
-        name: String,
-        description: String,
-        parameters: [ToolParameter],
-        handler: @escaping @Sendable ([String: String]) async throws -> String
-    ) {
-        self.name = name
-        self.description = description
-        self.parameters = parameters
-        self.handler = handler
-    }
-}
-
 // MARK: - Structured Tool I/O
 
 /// The typed input a tool handler receives.
