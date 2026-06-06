@@ -16,8 +16,13 @@ let package = Package(
         .executable(name: "XAgentApp", targets: ["XAgentApp"]),
     ],
     targets: [
+        .systemLibrary(
+            name: "CSQLite3",
+            path: "Sources/CSQLite3"
+        ),
         .target(
             name: "XAgentCore",
+            dependencies: ["CSQLite3"],
             path: "Sources/XAgentCore"
         ),
         .target(
