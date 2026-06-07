@@ -60,7 +60,7 @@ public enum AppleFoundationModelsError: Error, Sendable {
 /// ```
 public struct AppleFoundationModelsProvider: LLMProvider {
     /// The Core ML model powering on-device inference.
-    private let model: MLModel
+    private nonisolated(unsafe) let model: MLModel
 
     /// Maximum number of tokens to generate in a single completion.
     private let maxTokens: Int
@@ -70,7 +70,7 @@ public struct AppleFoundationModelsProvider: LLMProvider {
     private let temperature: Float
 
     /// Tokenizer used to convert between text and token IDs.
-    private let tokenizer: NLTokenizer
+    private nonisolated(unsafe) let tokenizer: NLTokenizer
 
     /// Special end-of-sequence token ID. Generation stops when this token
     /// is produced.
