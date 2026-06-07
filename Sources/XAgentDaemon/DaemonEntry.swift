@@ -130,28 +130,25 @@ struct DaemonEntry {
         // Build an SSE stream by wrapping the daemon's runStreaming.
         // The handler yields fully-formatted SSE frames (including [DONE]);
         // the server writes them verbatim without additional wrapping.
-        let sseStream = AsyncThrowingStream<String, any Error> { continuation in
-            Task {
-                do {
-                    let runtimeStream = await daemon.runStreaming(
-                        task: task
-                    )
-                    for try await chunk in runtimeStream {
-                        continuation.yield(
-                            SSEStream.event(data: chunk)
-                        )
-                    }
-                    continuation.yield(SSEStream.done())
-                    continuation.finish()
-                } catch {
+        let (sseStream, continuation) = AsyncThrowingStream<String, any Error>.makeStream()
+        Task {
+            do {
+                let runtimeStream = await daemon.runStreaming(task: task)
+                for try await chunk in runtimeStream {
                     continuation.yield(
-                        SSEStream.event(
-                            data: "[ERROR] \(error)",
-                            event: "error"
-                        )
+                        SSEStream.event(data: chunk)
                     )
-                    continuation.finish()
                 }
+                continuation.yield(SSEStream.done())
+                continuation.finish()
+            } catch {
+                continuation.yield(
+                    SSEStream.event(
+                        data: "[ERROR] \(error)",
+                        event: "error"
+                    )
+                )
+                continuation.finish()
             }
         }
 
