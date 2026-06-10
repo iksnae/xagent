@@ -1,39 +1,22 @@
 ---
 name: milestone-grinder
-description: >
-  Run the LOSWFX milestone delivery loop end-to-end as an artifact-
-  driven state machine: execute the current MILESTONE-<N>-PLAN.md via
-  TDD until the Definition of Done passes, record evidence, write
-  MILESTONE-<N>-CLOSEOUT.md, draft MILESTONE-<N+1>-PLANNING-DRAFT.md,
-  update ROADMAP.md + PROJECT-DEVELOPMENT-SNAPSHOT.md, then promote
-  the next planning draft to MILESTONE-<N+1>-PLAN.md. Encodes the
-  operator's practiced loop: deliver via TDD, commit + push after each
-  verified scope item, close with evidence, derive roadmap/snapshot
-  updates from closeout, finalize the next milestone plan, then merge the
-  milestone branch to main before the next begins (one milestone, one
-  branch, merged in order — no stacking). Two
-  modes: stepped (default, pauses between delivery/review/promotion
-  phases) and auto (chains only validated phases; never executes a
-  newly generated plan unless it already existed before the run or has
-  passed the review gate). Do NOT use this to start a fresh milestone
-  with no PLANNING-DRAFT, skip closeout/evidence writing, recover from
-  broken main, or execute plans with `Status: Blocked`.
+description: "Use when running the LOSWFX milestone delivery loop end-to-end as an artifact-driven state machine: execute the active MILESTONE plan with TDD, record tracking/evidence, write closeout, update roadmap/snapshot, promote the next plan, and merge one milestone branch in order. Supports stepped and auto modes with halt rules. Do not use for a fresh milestone with no planning draft, blocked plans, broken main, or scope invented beyond the plan."
 side: shadow
 max_iterations: 200
 contract:
   kind: deliverable
   inputs:
     - kind: layer-4
-      path: docs/MILESTONE-*-PLAN.md
+      path: docs/milestones/MILESTONE-*-PLAN.md
       required: true
   outputs:
-    - path: docs/MILESTONE-*-TRACKING.md
+    - path: docs/milestones/MILESTONE-*-TRACKING.md
       required: true
-    - path: docs/MILESTONE-*-EVIDENCE.md
+    - path: docs/milestones/MILESTONE-*-EVIDENCE.md
       required: true
-    - path: docs/MILESTONE-*-CLOSEOUT.md
+    - path: docs/milestones/MILESTONE-*-CLOSEOUT.md
       required: true
-    - path: docs/MILESTONE-*-PLANNING-DRAFT.md
+    - path: docs/milestones/MILESTONE-*-PLANNING-DRAFT.md
       required: true
     - path: docs/ROADMAP.md
       required: true
@@ -128,8 +111,8 @@ On resume, reconstruct state from disk first, then ledger.
 Required:
 
 * **active milestone** — auto-detected as the highest-numbered
-  `docs/MILESTONE-<N>-PLAN.md` without a matching completed
-  `docs/MILESTONE-<N>-CLOSEOUT.md`.
+  `docs/milestones/MILESTONE-<N>-PLAN.md` without a matching completed
+  `docs/milestones/MILESTONE-<N>-CLOSEOUT.md`.
 
 Optional:
 
@@ -204,8 +187,8 @@ Before delivery or promotion:
    * Definition of Done is measurable.
    * Primary Scope references existing files/symbols or explicitly
      creates them.
-5. Ensure `docs/MILESTONE-N-TRACKING.md` exists; scaffold if absent.
-6. Ensure `docs/MILESTONE-N-EVIDENCE.md` exists; scaffold if absent.
+5. Ensure `docs/milestones/MILESTONE-N-TRACKING.md` exists; scaffold if absent.
+6. Ensure `docs/milestones/MILESTONE-N-EVIDENCE.md` exists; scaffold if absent.
 7. Write `state.milestone-grinder.started`.
 
 If preflight fails, halt.
@@ -214,7 +197,7 @@ If preflight fails, halt.
 
 For active milestone N:
 
-1. Read `docs/MILESTONE-N-PLAN.md`.
+1. Read `docs/milestones/MILESTONE-N-PLAN.md`.
 2. For each Primary Scope item:
 
    1. Write the failing test first.
@@ -227,14 +210,14 @@ For active milestone N:
    4. If validators pass, commit:
       `M<N> <letter>: <one-liner>`
    5. Push.
-   6. Append to `docs/MILESTONE-N-TRACKING.md`:
+   6. Append to `docs/milestones/MILESTONE-N-TRACKING.md`:
 
       * scope item
       * commit SHA
       * tests added/changed
       * validator outcome
       * summary
-   7. Append to `docs/MILESTONE-N-EVIDENCE.md`:
+   7. Append to `docs/milestones/MILESTONE-N-EVIDENCE.md`:
 
       * commit SHA
       * relevant files
@@ -253,9 +236,9 @@ When every DoD bullet is satisfied:
    does), the `real-execution` validator must be green on the milestone's
    ledger — no proof-tagged scope item may have run on the fake adapter. A
    fake-green proof halts the close. (`loswfx practices check real-execution`.)
-1. Verify `docs/MILESTONE-N-EVIDENCE.md` contains evidence for every
+1. Verify `docs/milestones/MILESTONE-N-EVIDENCE.md` contains evidence for every
    DoD bullet.
-2. Write `docs/MILESTONE-N-CLOSEOUT.md` from evidence only:
+2. Write `docs/milestones/MILESTONE-N-CLOSEOUT.md` from evidence only:
 
    * Status
    * Delivered
@@ -264,7 +247,7 @@ When every DoD bullet is satisfied:
    * Retrospective
    * Carry-forward
    * Validator Notes
-3. Scaffold `docs/MILESTONE-(N+1)-PLANNING-DRAFT.md` from template.
+3. Scaffold `docs/milestones/MILESTONE-(N+1)-PLANNING-DRAFT.md` from template.
    Populate only Goal, Context, and Carry-forward candidates from
    N's closeout.
 4. Commit:
@@ -305,15 +288,15 @@ For closed milestone N and draft N+1:
 
 3. Promote N+1.
 
-   * Read `docs/MILESTONE-(N+1)-PLANNING-DRAFT.md`.
+   * Read `docs/milestones/MILESTONE-(N+1)-PLANNING-DRAFT.md`.
    * Resolve every open question.
    * Remove all `[?]` markers.
    * Convert carry-forward candidates into concrete Primary Scope.
    * Ensure Definition of Done is measurable.
-   * Rename to `docs/MILESTONE-(N+1)-PLAN.md`.
+   * Rename to `docs/milestones/MILESTONE-(N+1)-PLAN.md`.
    * Set `Status: Ready`.
-   * Scaffold `docs/MILESTONE-(N+1)-TRACKING.md`.
-   * Scaffold `docs/MILESTONE-(N+1)-EVIDENCE.md`.
+   * Scaffold `docs/milestones/MILESTONE-(N+1)-TRACKING.md`.
+   * Scaffold `docs/milestones/MILESTONE-(N+1)-EVIDENCE.md`.
 
 4. Commit:
    `milestone: promote <N+1> plan`
@@ -506,11 +489,11 @@ independent review gate marks it executable.
 
 A cycle is valid when:
 
-* `docs/MILESTONE-N-TRACKING.md` lists each scope item with commit SHA
+* `docs/milestones/MILESTONE-N-TRACKING.md` lists each scope item with commit SHA
   and validator result.
-* `docs/MILESTONE-N-EVIDENCE.md` maps every DoD bullet to commits,
+* `docs/milestones/MILESTONE-N-EVIDENCE.md` maps every DoD bullet to commits,
   tests, files, validator summaries, and produced artifacts.
-* `docs/MILESTONE-N-CLOSEOUT.md` exists and all claims are backed by
+* `docs/milestones/MILESTONE-N-CLOSEOUT.md` exists and all claims are backed by
   evidence.
 * The closeout has passed review.
 * The git log shows incremental scope-tagged commits.
@@ -518,10 +501,10 @@ A cycle is valid when:
   language only.
 * `docs/PROJECT-DEVELOPMENT-SNAPSHOT.md` points to N as last shipped
   and N+1 as next in flight.
-* `docs/MILESTONE-(N+1)-PLAN.md` exists with `Status: Ready`.
-* `docs/MILESTONE-(N+1)-PLAN.md` has no `[?]` markers.
-* `docs/MILESTONE-(N+1)-TRACKING.md` exists.
-* `docs/MILESTONE-(N+1)-EVIDENCE.md` exists.
+* `docs/milestones/MILESTONE-(N+1)-PLAN.md` exists with `Status: Ready`.
+* `docs/milestones/MILESTONE-(N+1)-PLAN.md` has no `[?]` markers.
+* `docs/milestones/MILESTONE-(N+1)-TRACKING.md` exists.
+* `docs/milestones/MILESTONE-(N+1)-EVIDENCE.md` exists.
 * **The milestone branch is merged to `main`** (Phase 3): the PR is
   closed-as-merged, the branch is deleted, and local `main` is synced.
   `state.milestone-grinder.merged` records the merge SHA + PR number.

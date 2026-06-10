@@ -13,7 +13,7 @@ contract:
       path: docs/PROJECT-DEVELOPMENT-SNAPSHOT.md
       required: false
   outputs:
-    - path: docs/MILESTONE-*-PLANNING-DRAFT.md
+    - path: docs/milestones/MILESTONE-*-PLANNING-DRAFT.md
       required: true
   verify:
     - skill-frontmatter
@@ -66,7 +66,7 @@ It does **not** commit to:
 1. **Operator intention** — whatever the operator passed ("land real
    execution", "harden the loop", a pasted paragraph). The primary
    signal when present.
-2. **History** — the most recent `docs/MILESTONE-<N>-CLOSEOUT.md`
+2. **History** — the most recent `docs/milestones/MILESTONE-<N>-CLOSEOUT.md`
    "Carry forward" sections and any reopened milestones. What's owed.
 3. **Roadmap** — `docs/ROADMAP.md` "Current Position", "Strategic
    priority" arc, and "Roadmap Themes". The declared direction.
@@ -76,7 +76,7 @@ It does **not** commit to:
 5. **Snapshot** — `docs/PROJECT-DEVELOPMENT-SNAPSHOT.md` "next in flight"
    and "last shipped". Where the loop currently points.
 
-The next milestone number is `max(<N> across docs/MILESTONE-<N>-*.md) + 1`.
+The next milestone number is `max(<N> across docs/milestones/MILESTONE-<N>-*.md) + 1`.
 A draft earns its place only if it traces to an intention, a carry-forward
 item, or a roadmap line. No signal → not a milestone.
 
@@ -106,7 +106,7 @@ obvious default and note it in the draft, don't ask.
 ## Output
 
 For a batch of size K, write **K** files
-`docs/MILESTONE-<N>-PLANNING-DRAFT.md` … `<N+K-1>`, each in the
+`docs/milestones/MILESTONE-<N>-PLANNING-DRAFT.md` … `<N+K-1>`, each in the
 `PLANNING-DRAFT` shape from `docs/MILESTONE-TEMPLATE.md`:
 
 - `# Milestone <N> Planning Draft` + `Date:` + `Working name:` (txt block)

@@ -71,8 +71,8 @@
     ]
   },
   "github": {
-    "enabled": false,
-    "dryRun": true,
+    "enabled": true,
+    "dryRun": false,
     "labels": [
       "loswfx:intake",
       "loswfx:product",
@@ -97,7 +97,6 @@
       "find",
       "gh",
       "git",
-      "go",
       "grep",
       "head",
       "jq",
@@ -106,7 +105,9 @@
       "test",
       "tr",
       "wc",
-      "xargs"
+      "xargs",
+      "swift",
+      "which"
     ],
     "deniedCommands": [
       "rm",
@@ -236,7 +237,7 @@
     "budget": 2
   },
   "verification": {
-    "buildCommand": "",
+    "buildCommand": "swift build",
     "timeoutMs": 30000
   },
   "phases": [
@@ -320,13 +321,11 @@
   "skills": {
     "path": ".loswfx/skills"
   },
-  "shadow": {
-    "path": "/Users/khaos/Projects/shadow-xagent",
-    "repo": "loswf/shadow-xagent"
-  },
+  "shadow": {},
   "cost": {},
   "engagement": {
     "ownerRepo": "iksnae/xagent",
-    "approvals": {}
+    "approvals": {},
+    "autoShip": true
   }
 }
