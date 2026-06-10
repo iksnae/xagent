@@ -1,2 +1,0 @@
-swift build: BUILD COMPLETE (all targets compiled cleanly)
-swift test:  ALL TESTS PASSED (0 failures across AgentRuntimeTests, AgentTests, CLIIntegrationTests, LLMProviderTests, ToolRegistryTests, and more)
