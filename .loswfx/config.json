@@ -27,25 +27,6 @@
     "model": "deepseek-v4-pro",
     "timeoutMs": 30000
   },
-  "providers": {
-    "codex": {
-      "kind": "codex",
-      "mode": "subscription",
-      "baseUrl": "https://chatgpt.com/backend-api",
-      "model": "gpt-5.5",
-      "timeoutMs": 30000
-    },
-    "deepseek": {
-      "kind": "deepseek",
-      "mode": "hosted",
-      "baseUrl": "https://api.deepseek.com",
-      "apiKeyEnv": "DEEPSEEK_API_KEY",
-      "hostedProvider": "deepseek",
-      "model": "deepseek-v4-pro",
-      "timeoutMs": 30000
-    }
-  },
-  "activeProvider": "deepseek",
   "runner": {
     "kind": "local-shell",
     "environment": "local"
@@ -77,32 +58,12 @@
         "name": "designer",
         "provider": "deepseek",
         "model": "deepseek-v4-pro"
-      },
-      {
-        "name": "intake",
-        "provider": "deepseek",
-        "model": "deepseek-v4-pro"
-      },
-      {
-        "name": "plan-reviewer",
-        "provider": "deepseek",
-        "model": "deepseek-v4-pro"
-      },
-      {
-        "name": "decomposer",
-        "provider": "deepseek",
-        "model": "deepseek-v4-pro"
-      },
-      {
-        "name": "researcher",
-        "provider": "deepseek",
-        "model": "deepseek-v4-pro"
       }
     ],
     "reviewGates": [
       {
         "name": "operator-review",
-        "required": false,
+        "required": true,
         "roles": [
           "reviewer"
         ]
@@ -110,8 +71,8 @@
     ]
   },
   "github": {
-    "enabled": false,
-    "dryRun": true,
+    "enabled": true,
+    "dryRun": false,
     "labels": [
       "loswfx:intake",
       "loswfx:product",
@@ -136,18 +97,17 @@
       "find",
       "gh",
       "git",
-      "go",
       "grep",
       "head",
       "jq",
       "ls",
-      "swift",
       "tail",
       "test",
       "tr",
       "wc",
-      "which",
-      "xargs"
+      "xargs",
+      "swift",
+      "which"
     ],
     "deniedCommands": [
       "rm",
@@ -277,7 +237,7 @@
     "budget": 2
   },
   "verification": {
-    "buildCommand": "swift test",
+    "buildCommand": "swift build",
     "timeoutMs": 30000
   },
   "phases": [
@@ -362,12 +322,10 @@
     "path": ".loswfx/skills"
   },
   "shadow": {},
-  "cost": {
-    "source": "factory"
-  },
+  "cost": {},
   "engagement": {
     "ownerRepo": "iksnae/xagent",
     "approvals": {},
-    "defaultWorkflow": "ongoing-development"
+    "autoShip": true
   }
 }
