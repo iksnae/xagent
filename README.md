@@ -207,3 +207,9 @@ Run the test suite:
 ```bash
 swift test
 ```
+
+Run the CLI:
+
+```bash
+swift run xagentcli
+```
