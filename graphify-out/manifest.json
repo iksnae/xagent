@@ -1,0 +1,402 @@
+{
+  ".loswfx/config.json": {
+    "mtime": 1781133155.0322957,
+    "ast_hash": "83270a55acf86188da0c93cb79b59e81",
+    "semantic_hash": ""
+  },
+  ".loswfx/tools/edit_source_detect.py": {
+    "mtime": 1781133155.0365248,
+    "ast_hash": "3b600eae1ac0bbaf52a967a106820a61",
+    "semantic_hash": ""
+  },
+  ".loswfx/tools/generate_article_audio.py": {
+    "mtime": 1781133155.036583,
+    "ast_hash": "d03ba1a9647fa0b08058db484f55ed02",
+    "semantic_hash": ""
+  },
+  ".loswfx/tools/generate_image.py": {
+    "mtime": 1781133155.0366473,
+    "ast_hash": "c387382432d829cb984ffeb44b0a02e0",
+    "semantic_hash": ""
+  },
+  ".loswfx/tools/lint_remotion_spec.py": {
+    "mtime": 1781133155.0367472,
+    "ast_hash": "ccbdc3e336b3241a9847b83b9449b4cd",
+    "semantic_hash": ""
+  },
+  ".loswfx/tools/render_remotion.py": {
+    "mtime": 1781133155.0368037,
+    "ast_hash": "7235b51f0bbfcf9fa108bb6f92621efc",
+    "semantic_hash": ""
+  },
+  ".loswfx/tools/test_edit_source_detect.py": {
+    "mtime": 1781133155.0368578,
+    "ast_hash": "3515cce4322d57483be6dafc879389d3",
+    "semantic_hash": ""
+  },
+  "Package.swift": {
+    "mtime": 1781133155.0369134,
+    "ast_hash": "80be1cbceeceb1a7f7ddeec9aeedb8ce",
+    "semantic_hash": ""
+  },
+  "Sources/XAgentCLI/main.swift": {
+    "mtime": 1781133155.0371447,
+    "ast_hash": "3f132f7db05c68ef744fa552031373b2",
+    "semantic_hash": ""
+  },
+  "Sources/XAgentCore/Agent/Agent.swift": {
+    "mtime": 1781133155.0372622,
+    "ast_hash": "be4736aa804e4e9b2e2f30e1fe983a4b",
+    "semantic_hash": ""
+  },
+  "Sources/XAgentCore/Models/LLMProvider.swift": {
+    "mtime": 1781133155.037343,
+    "ast_hash": "61638b007bf0bc1e7f8d08134a437d65",
+    "semantic_hash": ""
+  },
+  "Sources/XAgentCore/Runtime/AgentRuntime.swift": {
+    "mtime": 1781133155.037432,
+    "ast_hash": "7ee1eed0c85d0165a60d04fe62d3016d",
+    "semantic_hash": ""
+  },
+  "Sources/XAgentCore/Tools/Tool.swift": {
+    "mtime": 1781133155.0375137,
+    "ast_hash": "5c3757d895917ca0e547cedb04acb345",
+    "semantic_hash": ""
+  },
+  "Sources/XAgentCore/Tools/ToolRegistry.swift": {
+    "mtime": 1781133155.0376675,
+    "ast_hash": "077979b12bbfc15605c049878f9fa902",
+    "semantic_hash": ""
+  },
+  "Sources/XAgentCore/XAgentCore.swift": {
+    "mtime": 1781133155.0378609,
+    "ast_hash": "775994df878f8a28ea6e52d3e9829aa3",
+    "semantic_hash": ""
+  },
+  "Tests/XAgentCoreTests/AgentRuntimeTests.swift": {
+    "mtime": 1781133155.0379918,
+    "ast_hash": "44fef7cc25ad9bf16f19ad1214a131fd",
+    "semantic_hash": ""
+  },
+  "Tests/XAgentCoreTests/AgentTests.swift": {
+    "mtime": 1781133155.0380466,
+    "ast_hash": "b3cba6f7904b64d15d9f774080abe02b",
+    "semantic_hash": ""
+  },
+  "Tests/XAgentCoreTests/CLIIntegrationTests.swift": {
+    "mtime": 1781133155.0381048,
+    "ast_hash": "a82bc2fd587e950fbfb3ca4b73b7a91c",
+    "semantic_hash": ""
+  },
+  "Tests/XAgentCoreTests/LLMProviderTests.swift": {
+    "mtime": 1781133155.038157,
+    "ast_hash": "f04612604d569400b38c00d24fb30a43",
+    "semantic_hash": ""
+  },
+  "Tests/XAgentCoreTests/ToolRegistryTests.swift": {
+    "mtime": 1781133155.0382125,
+    "ast_hash": "46ff1b5f61dab1f51f467dd064e4181c",
+    "semantic_hash": ""
+  },
+  "Tests/XAgentCoreTests/ToolTests.swift": {
+    "mtime": 1781133155.03827,
+    "ast_hash": "69275402bb3c780d4b4f1a10d39c89c6",
+    "semantic_hash": ""
+  },
+  "Tests/XAgentCoreTests/XAgentCoreTests.swift": {
+    "mtime": 1781133155.0384011,
+    "ast_hash": "23c7256629bc51b9e699bbf05e45f575",
+    "semantic_hash": ""
+  },
+  ".loswfx/skills/README.md": {
+    "mtime": 1781133155.032725,
+    "ast_hash": "5ea6ac20dd4b84df543b42dba102778b",
+    "semantic_hash": ""
+  },
+  ".loswfx/skills/article-audio/SKILL.md": {
+    "mtime": 1781133155.032844,
+    "ast_hash": "331bfcc36ed1924e02d5b531be30f32c",
+    "semantic_hash": ""
+  },
+  ".loswfx/skills/backlog-grooming/SKILL.md": {
+    "mtime": 1781133155.032946,
+    "ast_hash": "3e921f1f83c257ec2917126d86d710ab",
+    "semantic_hash": ""
+  },
+  ".loswfx/skills/charm-tui/SKILL.md": {
+    "mtime": 1781133155.0330594,
+    "ast_hash": "1e319f1af502ce085d342f3a3e81afcf",
+    "semantic_hash": ""
+  },
+  ".loswfx/skills/code-quality-review/SKILL.md": {
+    "mtime": 1781133155.033167,
+    "ast_hash": "1fec8c156a9b33cd80bd8ee69fa27da3",
+    "semantic_hash": ""
+  },
+  ".loswfx/skills/dependency-bump/SKILL.md": {
+    "mtime": 1781133155.0332763,
+    "ast_hash": "a769da179268fc5fd1fc7e0927b35bd9",
+    "semantic_hash": ""
+  },
+  ".loswfx/skills/effort-pointing/SKILL.md": {
+    "mtime": 1781133155.0333838,
+    "ast_hash": "5af472f4f97db7f0e6886b96a6e82ae8",
+    "semantic_hash": ""
+  },
+  ".loswfx/skills/engagement-plan/SKILL.md": {
+    "mtime": 1781133155.0335898,
+    "ast_hash": "babe1dffd2d97cfdaf8ebcf69c7307e1",
+    "semantic_hash": ""
+  },
+  ".loswfx/skills/gherkin-feature-drive/SKILL.md": {
+    "mtime": 1781133155.0336983,
+    "ast_hash": "55e6000fc370567b3b3c2a2417dd1021",
+    "semantic_hash": ""
+  },
+  ".loswfx/skills/go-engineering-discipline/SKILL.md": {
+    "mtime": 1781133155.033822,
+    "ast_hash": "10d22d5e8aa6e287243974560e017f97",
+    "semantic_hash": ""
+  },
+  ".loswfx/skills/harvester/SKILL.md": {
+    "mtime": 1781133155.0339255,
+    "ast_hash": "fe5cd643b6770ca9e90ea329152855c5",
+    "semantic_hash": ""
+  },
+  ".loswfx/skills/illustrate-doc/SKILL.md": {
+    "mtime": 1781133155.0340273,
+    "ast_hash": "c3dee3800e747e472f6dc418d6730cbb",
+    "semantic_hash": ""
+  },
+  ".loswfx/skills/image-generate/SKILL.md": {
+    "mtime": 1781133155.0341365,
+    "ast_hash": "743bfb3b906e1dfd6f603a51ae5bf110",
+    "semantic_hash": ""
+  },
+  ".loswfx/skills/incremental-commit-all/SKILL.md": {
+    "mtime": 1781133155.03424,
+    "ast_hash": "6e4bf1f29ca467ddd740b2977c571aa1",
+    "semantic_hash": ""
+  },
+  ".loswfx/skills/iteration-plan/SKILL.md": {
+    "mtime": 1781133155.0343535,
+    "ast_hash": "e69d8a5b60791e571e1ac203634097cc",
+    "semantic_hash": ""
+  },
+  ".loswfx/skills/market-scout/SKILL.md": {
+    "mtime": 1781133155.0344641,
+    "ast_hash": "c21179cd36225f7ec4a0ba2dcddadfd5",
+    "semantic_hash": ""
+  },
+  ".loswfx/skills/milestone-grinder/SKILL.md": {
+    "mtime": 1781133155.0345767,
+    "ast_hash": "700bb8bfcec4335158a64a11c673ceba",
+    "semantic_hash": ""
+  },
+  ".loswfx/skills/milestone-planner/SKILL.md": {
+    "mtime": 1781133155.034671,
+    "ast_hash": "d6c42acd8807572f4b9ec46d95cce5e3",
+    "semantic_hash": ""
+  },
+  ".loswfx/skills/pr-review/SKILL.md": {
+    "mtime": 1781133155.034761,
+    "ast_hash": "5316d4cc68dc7c38f564e460e44da088",
+    "semantic_hash": ""
+  },
+  ".loswfx/skills/product-brief/SKILL.md": {
+    "mtime": 1781133155.0348518,
+    "ast_hash": "3db9b88f203b2e3d5f7bdc79e5f22afd",
+    "semantic_hash": ""
+  },
+  ".loswfx/skills/product/SKILL.md": {
+    "mtime": 1781133155.0349407,
+    "ast_hash": "8df1235c71c026386e655be194cc5dc7",
+    "semantic_hash": ""
+  },
+  ".loswfx/skills/proposal-promotion/SKILL.md": {
+    "mtime": 1781133155.035037,
+    "ast_hash": "515d5e14ca608ad3174bc1c314e0dbb0",
+    "semantic_hash": ""
+  },
+  ".loswfx/skills/remotion-author/SKILL.md": {
+    "mtime": 1781133155.0351326,
+    "ast_hash": "679f5beb6ecf7d06e25710f5c1d24f4f",
+    "semantic_hash": ""
+  },
+  ".loswfx/skills/remotion-render/SKILL.md": {
+    "mtime": 1781133155.035236,
+    "ast_hash": "c4c5949794d27c12008bf52ad7414a01",
+    "semantic_hash": ""
+  },
+  ".loswfx/skills/remotion-with-image/SKILL.md": {
+    "mtime": 1781133155.0353286,
+    "ast_hash": "b9a49a388af2031a12fd17295c45e954",
+    "semantic_hash": ""
+  },
+  ".loswfx/skills/repo-audit/SKILL.md": {
+    "mtime": 1781133155.0354226,
+    "ast_hash": "38ff86b825db0154d821c442f7f2c932",
+    "semantic_hash": ""
+  },
+  ".loswfx/skills/repo-audit/references/audit-template.md": {
+    "mtime": 1781133155.0355155,
+    "ast_hash": "214af2122563741d86c1cc18f38361a6",
+    "semantic_hash": ""
+  },
+  ".loswfx/skills/research-acceptance-criteria/SKILL.md": {
+    "mtime": 1781133155.0356052,
+    "ast_hash": "63a6df3ede258cedee7efb00c597be19",
+    "semantic_hash": ""
+  },
+  ".loswfx/skills/research-brief-verdict/SKILL.md": {
+    "mtime": 1781133155.0356963,
+    "ast_hash": "9783a1b534d6632836bab1ac31f343fc",
+    "semantic_hash": ""
+  },
+  ".loswfx/skills/research-brief/SKILL.md": {
+    "mtime": 1781133155.0357885,
+    "ast_hash": "81df9161409c0f79f1b097e65546ca0a",
+    "semantic_hash": ""
+  },
+  ".loswfx/skills/research-design-implications/SKILL.md": {
+    "mtime": 1781133155.0358827,
+    "ast_hash": "972acf3ff530f21f8ced76020f960e3e",
+    "semantic_hash": ""
+  },
+  ".loswfx/skills/retrospective/SKILL.md": {
+    "mtime": 1781133155.0359683,
+    "ast_hash": "650a4e55cc546e8c40deb52038f7e5bc",
+    "semantic_hash": ""
+  },
+  ".loswfx/skills/rfp-response/SKILL.md": {
+    "mtime": 1781133155.0360696,
+    "ast_hash": "84241fe19fdaee96646c3f22dfe07ef1",
+    "semantic_hash": ""
+  },
+  ".loswfx/skills/story-writer/SKILL.md": {
+    "mtime": 1781133155.0361738,
+    "ast_hash": "cdae04ca966b2d67a4dd891c19806be7",
+    "semantic_hash": ""
+  },
+  ".loswfx/skills/triage-decomposition/SKILL.md": {
+    "mtime": 1781133155.036347,
+    "ast_hash": "6990f93048ab6290b92cec76697d700d",
+    "semantic_hash": ""
+  },
+  ".loswfx/skills/writing-tests/SKILL.md": {
+    "mtime": 1781133155.036441,
+    "ast_hash": "89cd025c56befb839d2d34dfb9c76c63",
+    "semantic_hash": ""
+  },
+  "README.md": {
+    "mtime": 1781133155.036971,
+    "ast_hash": "8208b8207c98759cebb2d74ca51a737d",
+    "semantic_hash": ""
+  },
+  "RESPONSE.md": {
+    "mtime": 1781133155.0370245,
+    "ast_hash": "558f66d16ee3ed5a3de06386a70dbaa5",
+    "semantic_hash": ""
+  },
+  "docs/ARCHITECTURE.md": {
+    "mtime": 1781133155.0384865,
+    "ast_hash": "b354e7a29f65e1d74e599af5d2008b55",
+    "semantic_hash": ""
+  },
+  "docs/PRD.md": {
+    "mtime": 1781133155.038538,
+    "ast_hash": "97ff0cab828db9184640986d60f77b38",
+    "semantic_hash": ""
+  },
+  "docs/RFP.md": {
+    "mtime": 1781133155.0385892,
+    "ast_hash": "df020cc298601f75e22615d69f85b80b",
+    "semantic_hash": ""
+  },
+  ".loswfx/config.local.json": {
+    "mtime": 1781133155.0323565,
+    "ast_hash": "b2632c28730afecce456d113afc28212",
+    "semantic_hash": ""
+  },
+  ".claude/commands/catchup.md": {
+    "mtime": 1781133155.0314407,
+    "ast_hash": "4f948c65c1def8c66a965dc39225fa39",
+    "semantic_hash": ""
+  },
+  ".claude/commands/factory.md": {
+    "mtime": 1781133155.0315838,
+    "ast_hash": "adc7c538fd318eb71776d813ecc8d68c",
+    "semantic_hash": ""
+  },
+  ".claude/commands/handoff.md": {
+    "mtime": 1781133155.0316758,
+    "ast_hash": "0119e7799e2f72743f006ff00605f5eb",
+    "semantic_hash": ""
+  },
+  ".claude/commands/health.md": {
+    "mtime": 1781133155.0317495,
+    "ast_hash": "a3ee256eeb5522582d5187a4af8c778a",
+    "semantic_hash": ""
+  },
+  ".claude/commands/onboard.md": {
+    "mtime": 1781133155.0318274,
+    "ast_hash": "e4f0ad8208dd8531b03223c46ecda391",
+    "semantic_hash": ""
+  },
+  ".claude/commands/plan.md": {
+    "mtime": 1781133155.0319061,
+    "ast_hash": "7e5539dc7939b418f1b9de68fa1d724a",
+    "semantic_hash": ""
+  },
+  ".claude/commands/queue.md": {
+    "mtime": 1781133155.0319781,
+    "ast_hash": "5313d1452654a67625d00f9ad1cfafbd",
+    "semantic_hash": ""
+  },
+  ".claude/commands/review.md": {
+    "mtime": 1781133155.0320566,
+    "ast_hash": "f5d108e1454ca3302df2e0d171aae1a4",
+    "semantic_hash": ""
+  },
+  ".claude/commands/work.md": {
+    "mtime": 1781133155.0321302,
+    "ast_hash": "de656e6bfa5e2ca30ee76893496c840a",
+    "semantic_hash": ""
+  },
+  ".loswfx/cycle-briefs/issue-20/add-a-development-section-to-the-readme-build-+-test-instructions.md": {
+    "mtime": 1781133155.0325153,
+    "ast_hash": "71a436a99760178bc6cb35af62350217",
+    "semantic_hash": ""
+  },
+  ".loswfx/cycle-briefs/issue-20/cycle-draft-add-a-development-section-to-the-readme-build-+-test-instructions.md": {
+    "mtime": 1781133155.0325997,
+    "ast_hash": "ddb9887ec9b72e9615e09a5d80d2bed8",
+    "semantic_hash": ""
+  },
+  ".loswfx/skills/engagement-onboarding/SKILL.md": {
+    "mtime": 1781133155.0334883,
+    "ast_hash": "9f54f9b4dcddb1bb27c32d0d7611ff3f",
+    "semantic_hash": ""
+  },
+  ".loswfx/skills/swift-engineering-discipline/SKILL.md": {
+    "mtime": 1781133155.0362604,
+    "ast_hash": "7668a63fd5e07c2e864311eb6ddae05d",
+    "semantic_hash": ""
+  },
+  "prompts/mara/README.md": {
+    "mtime": 1781133155.0387084,
+    "ast_hash": "197912b600a00f50988843ef9029f7bd",
+    "semantic_hash": ""
+  },
+  "prompts/mara/base.md": {
+    "mtime": 1781133155.0387604,
+    "ast_hash": "36d9733703685182238aff3353b36c3b",
+    "semantic_hash": ""
+  },
+  "prompts/mara/warmups.yaml": {
+    "mtime": 1781133155.0388103,
+    "ast_hash": "137cde8cc2ff5194df16d2c8fd3f1a9b",
+    "semantic_hash": ""
+  }
+}

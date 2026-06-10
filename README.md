@@ -193,3 +193,17 @@ routing:
 - [Architecture Recommendations](docs/ARCHITECTURE.md)
 - [Product Requirements Document](docs/PRD.md)
 - [Request for Proposal](docs/RFP.md)
+
+## Development
+
+Build the project:
+
+```bash
+swift build
+```
+
+Run the test suite:
+
+```bash
+swift test
+```
