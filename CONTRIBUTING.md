@@ -30,6 +30,12 @@ To build a single target (e.g. just the CLI):
 swift build --target XAgentCLI
 ```
 
+To run the CLI after building:
+
+```bash
+swift run xagentcli
+```
+
 ## Test
 
 Run the full test suite from the repo root:
