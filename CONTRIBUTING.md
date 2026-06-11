@@ -2,6 +2,8 @@
 
 Thank you for your interest in contributing! This document covers how to set up your environment, build and test the project, navigate the module layout, and submit pull requests.
 
+For a high-level overview of the project, its architecture, and the basic development workflow (`swift build`, `swift test`, `swift run xagentcli`), see the **Development** section of [README.md](README.md). The README also covers the project's vision, core principles, model strategy, and MVP goals.
+
 ## Required toolchain
 
 xagent requires **Swift 6.x**. The package manifest declares `// swift-tools-version: 6.0`, so any Swift 6 release (6.0, 6.1, etc.) will work. You can download the latest toolchain from [swift.org](https://www.swift.org/download/) or install it via Xcode.
