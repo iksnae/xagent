@@ -59,6 +59,10 @@ swift test --filter XAgentCoreTests
 
 The `XAgentHTTP`, `XAgentCLI`, and `XAgentApp` targets do not have dedicated test bundles yet — contributions adding test coverage for them are welcome.
 
+## CI
+
+Every push and pull request to `main` is built and tested automatically via [`.github/workflows/ci.yml`](.github/workflows/ci.yml). The workflow runs `swift build` and `swift test` on the latest macOS runner. If either step fails, the check turns red — so run both locally before opening a PR.
+
 ## Module layout
 
 The repository is organized into five top-level targets, each living under `Sources/`:
